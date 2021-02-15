@@ -138,8 +138,10 @@ class ProjectOne(app_manager.RyuApp):
 		Now you have saved the links and switches of the topo. So you could do all sort of stuf with them. 
 		"""
 
+		print("\n\n\n\n\n\n\n BANAN")
 		print(ev)
-
+		print("\n\n\n\n\n\n\n BANAN")
+		
 		print(" \t" + "Current Links:")
 		for l in self.topo_raw_links:
 			print (" \t\t" + str(l))
