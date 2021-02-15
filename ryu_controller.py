@@ -137,14 +137,15 @@ class ProjectOne(app_manager.RyuApp):
 	def handler_link_delete(self, ev):
 		print("Link delete")
 		print(ev.link)
-		print(ev.link.src["datapath_id"])
-		print(ev.link.dst["datapath_id"])
+		print(ev.link.src.dpid)
+		print(ev.link.dst.dpid)
+
 	@set_ev_cls(event.EventLinkAdd)
 	def handler_link_add(self, ev):
 		print("link add")
 		print(ev.link)
-		print(ev.link.src["datapath_id"])
-		print(ev.link.dst["datapath_id"])
+		print(ev.link.src.dpid)
+		print(ev.link.dst.dpid)
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
