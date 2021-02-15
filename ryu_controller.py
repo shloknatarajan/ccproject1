@@ -140,7 +140,7 @@ class ProjectOne(app_manager.RyuApp):
 
 		print("\n\n\n\n\n\n\n BANAN")
 		print(ev)
-		print(ev.dpid)
+		print(ev.msg.dpid)
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
