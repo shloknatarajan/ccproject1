@@ -141,6 +141,7 @@ class ProjectOne(app_manager.RyuApp):
 		print("\n\n\n\n\n\n\n BANAN")
 		print(ev)
 		print(ev.switch.dp.id)
+		print(get_link(self, ev.switch.dp.id))
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
