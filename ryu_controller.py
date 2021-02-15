@@ -132,6 +132,19 @@ class ProjectOne(app_manager.RyuApp):
 	def handler_switch_enter(self, ev):
 		self.graph.add_node(ev.switch.dp.id)
 		print("Switch with DPID %d has been added." % (ev.switch.dp.id))
+
+	@set_ev_cls(event.EventLinkDelete)
+	def handler_link_delete(self, ev):
+		print("Link delete")
+		print(ev.link)
+		print(ev.link.src["datapath_id"])
+		print(ev.link.dst["datapath_id"])
+	@set_ev_cls(event.EventLinkAdd)
+	def handler_link_add(self, ev):
+		print("link add")
+		print(ev.link)
+		print(ev.link.src["datapath_id"])
+		print(ev.link.dst["datapath_id"])
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
