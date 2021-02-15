@@ -10,7 +10,7 @@ from ryu.topology import event
 # Below is the library used for topo discovery
 from ryu.topology.api import get_switch, get_link
 import copy
-import igraph
+import networkx as nx
 
 class ProjectOne(app_manager.RyuApp):
 	OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -22,6 +22,7 @@ class ProjectOne(app_manager.RyuApp):
 		# Holds the topology data and structure
 		self.topo_raw_switches = []
 		self.topo_raw_links = []
+		self.graph = nx.Graph()
 
 	@set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
 	def switch_features_handler(self, ev):
@@ -129,22 +130,12 @@ class ProjectOne(app_manager.RyuApp):
 	"""
 	@set_ev_cls(event.EventSwitchEnter)
 	def handler_switch_enter(self, ev):
-		# The Function get_switch(self, None) outputs the list of switches.
-		self.topo_raw_switches = copy.copy(get_switch(self, None))
-		# The Function get_link(self, None) outputs the list of links.
-		self.topo_raw_links = copy.copy(get_link(self, None))
-
-		"""
-		Now you have saved the links and switches of the topo. So you could do all sort of stuf with them. 
-		"""
-
-		print("\n\n\n\n\n\n\n BANAN")
-		print(ev)
-		print(ev.switch.dp.id)
-		print(get_link(self, ev.switch.dp.id))
+		self.graph.add_node(ev.switch.dp.id)
+		print("Switch with DPID %d has been added." % (ev.switch.dp.id))
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
 	@set_ev_cls(event.EventSwitchLeave, [MAIN_DISPATCHER, CONFIG_DISPATCHER, DEAD_DISPATCHER])
 	def handler_switch_leave(self, ev):
-		self.logger.info("Not tracking Switches, switch leaved.")
+		self.graph.remove_node(ev.switch.dp.id)
+		print("Switch with DPID %d has been removed." % (ev.switch.dp.id))
