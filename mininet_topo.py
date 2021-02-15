@@ -54,17 +54,6 @@ def test():
     net.addController('rmController', controller=RemoteController,
             ip='127.0.0.1', port=6633)
     net.start()
-    sleep(30)
-    print("Testing network connectivity")
-    net.pingAll()
-    #dumpNodeConnections(net.hosts)
-    print("Testing bandwidth between h1 and h4")
-    for i in range(8):
-        for j in range(8):
-            if i == j:
-                continue
-            hostA, hostB  = net.get('h'+str(i + 1), 'h'+str(j + 1))
-            net.iperf((hostA, hostB))
     CLI(net)
     net.stop()
 
