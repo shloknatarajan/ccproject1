@@ -90,7 +90,9 @@ class ProjectOne(app_manager.RyuApp):
 
 		dst = eth.dst
 		src = eth.src
-
+		print("BBBB")
+		print(eth.src)
+		print(eth.dst)
 		dpid = datapath.id
 		self.mac_to_port.setdefault(dpid, {})
 
@@ -105,7 +107,6 @@ class ProjectOne(app_manager.RyuApp):
 			out_port = ofproto.OFPP_FLOOD
 
 		actions = [parser.OFPActionOutput(out_port)]
-
 		# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -135,17 +136,12 @@ class ProjectOne(app_manager.RyuApp):
 
 	@set_ev_cls(event.EventLinkDelete)
 	def handler_link_delete(self, ev):
-		print("Link delete")
-		print(ev.link)
-		print(ev.link.src.dpid)
-		print(ev.link.dst.dpid)
+		self.graph.add_edge(ev.link.src.dpid, ev.link.dst.dpid)
 
 	@set_ev_cls(event.EventLinkAdd)
 	def handler_link_add(self, ev):
-		print("link add")
-		print(ev.link)
-		print(ev.link.src.dpid)
-		print(ev.link.dst.dpid)
+		self.graph.remove_edge(ev.link.src.dpid, ev.link.dst.dpid)
+		
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
