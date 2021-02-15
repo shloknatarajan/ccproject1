@@ -140,16 +140,7 @@ class ProjectOne(app_manager.RyuApp):
 
 		print("\n\n\n\n\n\n\n BANAN")
 		print(ev)
-		print("\n\n\n\n\n\n\n BANAN")
-		
-		print(" \t" + "Current Links:")
-		for l in self.topo_raw_links:
-			print (" \t\t" + str(l))
-
-		print(" \t" + "Current Switches:")
-		for s in self.topo_raw_switches:
-			print (" \t\t" + str(s))
-
+		print(ev.dpid)
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
