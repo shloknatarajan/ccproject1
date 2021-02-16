@@ -148,7 +148,9 @@ class ProjectOne(app_manager.RyuApp):
 	@set_ev_cls(event.EventHostAdd)
 	def handler_host_add(self, ev, dir):
 		self.graph.add_node(ev.host.mac)
-		
+		print(self.graph)
+
+	
 	def get_node_object(self, item):
 		if item.mac is not None:
 			return item.mac
