@@ -90,9 +90,7 @@ class ProjectOne(app_manager.RyuApp):
 
 		dst = eth.dst
 		src = eth.src
-		print("BBBB")
-		print(eth.src)
-		print(eth.dst)
+	
 		dpid = datapath.id
 		self.mac_to_port.setdefault(dpid, {})
 
@@ -106,7 +104,12 @@ class ProjectOne(app_manager.RyuApp):
 		else:
 			out_port = ofproto.OFPP_FLOOD
 
+		print("\n\n\n\n\n\n")
+		print(self.graph)
+		print(nx.shortest_path(self.graph, source=src, target=dst))
 		actions = [parser.OFPActionOutput(out_port)]
+		print("\n\n\n\n\n\n")
+		
 		# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -136,12 +139,21 @@ class ProjectOne(app_manager.RyuApp):
 
 	@set_ev_cls(event.EventLinkDelete)
 	def handler_link_delete(self, ev):
-		self.graph.add_edge(ev.link.src.dpid, ev.link.dst.dpid)
+		self.graph.add_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
 
 	@set_ev_cls(event.EventLinkAdd)
 	def handler_link_add(self, ev):
-		self.graph.remove_edge(ev.link.src.dpid, ev.link.dst.dpid)
+		self.graph.remove_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
+
+	@set_ev_cls(event.EventHostAdd):
+	def handler_host_add(self, ev, dir):
+		self.graph.add_node(ev.host.mac)
 		
+	def get_node_object(self, item):
+		if item.mac is not None:
+			return item.mac
+		else:
+			return item.dp.id
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
