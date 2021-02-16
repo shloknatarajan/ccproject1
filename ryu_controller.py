@@ -153,7 +153,7 @@ class ProjectOne(app_manager.RyuApp):
 
 
 	def get_node_object(self, item):
-		if mac in item.todict():
+		if 'mac' in item.todict():
 			return item.mac
 		else:
 			return item.dp.id
