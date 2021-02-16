@@ -156,7 +156,7 @@ class ProjectOne(app_manager.RyuApp):
 		if 'mac' in item.to_dict().keys():
 			return item.mac
 		else:
-			return item.dp.id
+			return item.dpid
 	"""
 	This event is fired when a switch leaves the topo. i.e. fails.
 	"""
