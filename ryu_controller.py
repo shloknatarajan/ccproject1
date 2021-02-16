@@ -149,7 +149,7 @@ class ProjectOne(app_manager.RyuApp):
 	@set_ev_cls(event.EventHostAdd)
 	def handler_host_add(self, ev, dir):
 		self.graph.add_node(ev.host.mac)
-		print(self.graph)
+		print("host with mac %s has been added" %(ev.host.mac))
 
 
 	def get_node_object(self, item):
