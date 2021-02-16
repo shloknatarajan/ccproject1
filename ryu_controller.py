@@ -109,7 +109,7 @@ class ProjectOne(app_manager.RyuApp):
 		print(nx.shortest_path(self.graph, source=src, target=dst))
 		actions = [parser.OFPActionOutput(out_port)]
 		print("\n\n\n\n\n\n")
-		
+
 		# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -145,7 +145,7 @@ class ProjectOne(app_manager.RyuApp):
 	def handler_link_add(self, ev):
 		self.graph.remove_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
 
-	@set_ev_cls(event.EventHostAdd):
+	@set_ev_cls(event.EventHostAdd)
 	def handler_host_add(self, ev, dir):
 		self.graph.add_node(ev.host.mac)
 		
