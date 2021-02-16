@@ -107,6 +107,7 @@ class ProjectOne(app_manager.RyuApp):
 		print("\n\n\n\n\n\n")
 		print(self.graph)
 		print(nx.shortest_path(self.graph, source=src, target=dst))
+		print(self.graph)
 		actions = [parser.OFPActionOutput(out_port)]
 		print("\n\n\n\n\n\n")
 
@@ -150,7 +151,7 @@ class ProjectOne(app_manager.RyuApp):
 		self.graph.add_node(ev.host.mac)
 		print(self.graph)
 
-	
+
 	def get_node_object(self, item):
 		if item.mac is not None:
 			return item.mac
