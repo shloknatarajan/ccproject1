@@ -78,6 +78,7 @@ class ProjectOne(app_manager.RyuApp):
 		print("redistribute_flows")
 		self.flows_packets.sort(key = lambda x: x[2])
 		self.flows_packets = self.flows_packets[:3]
+		print(self.flows_packets)
 		for pack in self.flows_packets:
 			print(self.net.nodes())
 			print(pack[0])
