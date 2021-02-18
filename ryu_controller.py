@@ -116,7 +116,7 @@ class ProjectOne(app_manager.RyuApp):
 			out_port = ofproto.OFPP_FLOOD
 
 		actions = [parser.OFPActionOutput(out_port)]
-		
+
 			# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -142,6 +142,7 @@ class ProjectOne(app_manager.RyuApp):
 	"""
 	@set_ev_cls(event.EventSwitchEnter)
 	def handler_switch_enter(self, ev):
+		print("SWITTTTTTTTTCHHHH ENTERRRRR")
 		# self.graph.add_node(ev.switch.dp.id)
 		# print("Switch with DPID %d has been added." % (ev.switch.dp.id))
 		switch_list = get_switch(self, None)

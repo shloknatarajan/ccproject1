@@ -21,27 +21,25 @@ class customTopo(Topo):
 
     def build(self, numCores = 3, numEdges=4, hostsPerEdge=2, bw = 5, delay = None):
         
-        switch_counter = 1
-        added =False
-        for i in range(numCores):
-            c_name = "s" + str(switch_counter)
-            switch_counter += 1
-            controller  = self.addSwitch(c_name, protocols='OpenFlow13')
-            configuration = dict(bw=bw, delay=delay,max_queue_size=10, loss=0, use_htb=True)                
-            host_counter = 1
-            for i in range(numEdges):
-                switch_name = "s" + str(switch_counter)
-                switch_counter += 1
-                switch = self.addSwitch(switch_name, protocols='OpenFlow13')
-                self.addLink(controller, switch, **configuration)
-                if added:
-                    continue
-                for j in range(hostsPerEdge):
-                    host_name = "h" + str(host_counter)
-                    host = self.addHost(host_name)
-                    self.addLink(host, switch, **configuration)
-                    host_counter += 1
-            added = True
+        h1 = self.addHost("h1")
+        h2 = self.addHost("h2")
+        h3 = self.addHost("h3")
+
+        ## Add switches
+        s1 = self.addSwitch("s1", protocols='OpenFlow13')
+        s2 = self.addSwitch("s2", protocols='OpenFlow13')
+        s3 = self.addSwitch("s3", protocols='OpenFlow13')
+        s4 = self.addSwitch("s4", protocols='OpenFlow13')
+
+
+        # Add links (Use the switches in then node1 space)
+        self.addLink(s1, h1, 1)
+        self.addLink(s1, s2, port1=2, port2=1)
+        self.addLink(s1, s3, 3, 1)
+        self.addLink(s3, s4, 2, 2)
+        self.addLink(s2, s4, 2, 1)
+        self.addLink(s4, h2, 3)
+        self.addLink(s4, h3, 4)
 
 def test():
     topo = customTopo()
