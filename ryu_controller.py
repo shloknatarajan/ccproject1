@@ -79,6 +79,9 @@ class ProjectOne(app_manager.RyuApp):
 		self.flows_packets.sort(key = lambda x: x[2])
 		self.flows_packets = self.flows_packets[:3]
 		for pack in self.flows_packets:
+			print(self.net.nodes())
+			print(pack[0])
+			print(pack[1])
 			self.net[pack[0]][pack[1]]["latency"] += pack[1] * .01
 			path = max(nx.all_simple_paths(self.net, pack[0], pack[1]), key=lambda x: len(x))
 			next=path[path.index(dpid)+1] #get next hop
@@ -191,9 +194,6 @@ class ProjectOne(app_manager.RyuApp):
 
 		dst = eth.dst
 		src = eth.src
-		print("nanaa")
-		print(dst)
-		print(src)
 		dpid = datapath.id
 		self.mac_to_port.setdefault(dpid, {})
 
