@@ -33,7 +33,7 @@ class ProjectOne(app_manager.RyuApp):
 			cfg.IntOpt('onetwolatency', default=10),
 			cfg.IntOpt('twofourlatency', default=10),
 			cfg.IntOpt('twothreelatency', default=10),
-			cfg.IntOpt('threefourlatency', default=10),
+			cfg.IntOpt('threefourlatency', default=10)])
 		self.mac_to_port = {}
 		# Holds the topology data and structure
 		self.topo_raw_switches = []
