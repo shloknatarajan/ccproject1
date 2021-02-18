@@ -41,6 +41,7 @@ class ProjectOne(app_manager.RyuApp):
 		self.net=nx.DiGraph()
 		self.datapaths = {}
 		self.monitor_thread = hub.spawn(self._monitor)
+		self.flows_packets = []
 
 	@set_ev_cls(ofp_event.EventOFPStateChange,
 				[MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -59,6 +60,7 @@ class ProjectOne(app_manager.RyuApp):
 		while True:
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
+			self.redistribute_flows()
 			hub.sleep(10)
 
 	def _request_stats(self, datapath):
@@ -72,8 +74,23 @@ class ProjectOne(app_manager.RyuApp):
 		req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
 		datapath.send_msg(req)
 
+	def redistribute_flows(self):
+		print("redistribute_flows")
+		self.flows_packets.sort(key = lambda x: x[2])
+		self.flows_packets = self.flows_packets[:3]
+		for pack in self.flows_packets:
+			graph[pack[0]][pack[1]]["latency"] += pack[1] * .01
+			path = max(nx.all_simple_paths(self.net, pack[0], pack[1]), key=lambda x: len(x))
+			next=path[path.index(dpid)+1] #get next hop
+			out_port=self.net[dpid][next]["port"] # get output port
+			match = parser.OFPMatch(in_port=pack[0], eth_dst=pack[1])
+			actions = [parser.OFPActionOutput(out_port)]
+			self.add_flow(datapath, 1, match, actions)
+
 	@set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
 	def _flow_stats_reply_handler(self, ev):
+		self.flows_packets = []
+
 		body = ev.msg.body
 
 		self.logger.info('datapath         '
@@ -85,6 +102,7 @@ class ProjectOne(app_manager.RyuApp):
 		for stat in sorted([flow for flow in body if flow.priority == 1],
 						   key=lambda flow: (flow.match['in_port'],
 											 flow.match['eth_dst'])):
+			self.flows_packets.add((stat.match['in_port'], stat.match['eth_dst'], stat.byte_count))
 			self.logger.info('%016x %8x %17s %8x %8d %8d',
 							 ev.msg.datapath.id,
 							 stat.match['in_port'], stat.match['eth_dst'],
