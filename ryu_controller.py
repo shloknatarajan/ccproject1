@@ -236,12 +236,25 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-		# print(self.CONF.onetwolatency)
-		print(self.CONF.items())
-		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+		self.get_latency(1, 2)
+		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no, 'latency':}) for link in links_list]
 		print(links)
 		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
+
+	def get_latency(inside, out):
+		for (each_key, each_val) in self.CONF:
+			print(each_key)
+
+	def get_word(self, num):
+		if num == 1:
+			return "one"
+		if num == 2:
+			return "two"
+		if num == 3:
+			return "three"
+		if num == 4:
+			return "four"
 
 	# @set_ev_cls(event.EventLinkDelete)
 	# def handler_link_delete(self, ev):
