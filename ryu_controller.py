@@ -221,8 +221,9 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-		print(links)
+
 		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+		print(links)
 		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
 
