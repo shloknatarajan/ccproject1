@@ -128,6 +128,7 @@ class ProjectOne(app_manager.RyuApp):
 		if msg.buffer_id == ofproto.OFP_NO_BUFFER:
 			data = msg.data
 
+		actions = [parser.OFPActionOutput(out_port)]
 		out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
 								  in_port=in_port, actions=actions, data=data)
 		datapath.send_msg(out)
