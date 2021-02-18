@@ -243,7 +243,7 @@ class ProjectOne(app_manager.RyuApp):
 		self.net.add_edges_from(links)
 
 	def get_latency(self, inside, out):
-		for (each_key, each_val) in self.CONF:
+		for (each_key, each_val) in self.CONF.items():
 			print(each_key)
 
 	def get_word(self, num):
