@@ -193,9 +193,9 @@ class ProjectOne(app_manager.RyuApp):
 			self.net.add_edge(dpid,src,port=in_port)  # Add link from switch to node and make sure you are identifying the output port.
 		if dst in self.net:
 			if not widest:
-				path=nx.shortest_path(self.net,src,dst) # get shortest path  
+				path=nx.shortest_path(self.net,src,dst, weight='latency') # get shortest path  
 			else: 
-				path = max(nx.all_simple_paths(DAG, 1, 10), key=lambda x: len(x))
+				path = max(nx.all_simple_paths(self.net, src, dst), key=lambda x: len(x))
 			next=path[path.index(dpid)+1] #get next hop
 			out_port=self.net[dpid][next]["port"] # get output port
 		else:
