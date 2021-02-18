@@ -107,7 +107,7 @@ class ProjectOne(app_manager.RyuApp):
 		if src not in self.net: #Learn it
 			self.net.add_node(src) # Add a node to the graph
 			self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
-			self.net.add_edge(dpid,src,{'port':msg.in_port})  # Add link from switch to node and make sure you are identifying the output port.
+			self.net.add_edge(dpid,src,{'port':in_port})  # Add link from switch to node and make sure you are identifying the output port.
 		if dst in self.net:
 			path=nx.shortest_path(self.net,src,dst) # get shortest path  
 			next=path[path.index(dpid)+1] #get next hop
