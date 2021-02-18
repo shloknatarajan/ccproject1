@@ -111,7 +111,7 @@ class ProjectOne(app_manager.RyuApp):
 		if dst in self.net:
 			path=nx.shortest_path(self.net,src,dst) # get shortest path  
 			next=path[path.index(dpid)+1] #get next hop
-			out_port=self.net[dpid][next].port # get output port
+			out_port=self.net[dpid][next]["port"] # get output port
 		else:
 			out_port = ofproto.OFPP_FLOOD
 			# install a flow to avoid packet_in next time
