@@ -5,7 +5,7 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
-
+from operator import attrgetter
 from ryu.topology import event
 # Below is the library used for topo discovery
 from ryu.topology.api import get_switch, get_link
