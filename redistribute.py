@@ -288,7 +288,7 @@ class toposomething(app_manager.RyuApp):
                 if len(path) != 0:
                     #print 'found path:',
                     for p in path:
-                        #print self.graph.es[p]['src_dpid'],
+                        print(self.graph.es[p]['src_dpid'])
                     #print 'fin'
                     out_port = self.graph.es[path[0]]['src_port']
                 else:
