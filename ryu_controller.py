@@ -176,5 +176,5 @@ class ProjectOne(app_manager.RyuApp):
 	"""
 	@set_ev_cls(event.EventSwitchLeave, [MAIN_DISPATCHER, CONFIG_DISPATCHER, DEAD_DISPATCHER])
 	def handler_switch_leave(self, ev):
-		self.graph.remove_node(ev.switch.dp.id)
+		self.net.remove_node(ev.switch.dp.id)
 		print("Switch with DPID %d has been removed." % (ev.switch.dp.id))
