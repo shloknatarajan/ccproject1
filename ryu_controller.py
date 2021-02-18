@@ -6,6 +6,7 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from operator import attrgetter
+from ryu import cfg
 from ryu.topology import event
 # Below is the library used for topo discovery
 from ryu.topology.api import get_switch, get_link
@@ -19,6 +20,32 @@ class ProjectOne(app_manager.RyuApp):
 	def __init__(self, *args, **kwargs):
 		super(ProjectOne, self).__init__(*args, **kwargs)
 		# USed for learning switch functioning
+		self.CONF = cfg.CONF
+		self.CONF.register_opts([
+			cfg.IntOpt('14bandwidth', default=10),
+			cfg.IntOpt('13bandwidth', default=10),
+			cfg.IntOpt('12bandwidth', default=10),
+			cfg.IntOpt('24bandwidth', default=10),
+			cfg.IntOpt('23bandwidth', default=10),
+			cfg.IntOpt('21bandwidth', default=10),
+			cfg.IntOpt('31bandwidth', default=10),
+			cfg.IntOpt('32bandwidth', default=10),
+			cfg.IntOpt('34bandwidth', default=10),
+			cfg.IntOpt('41bandwidth', default=10),
+			cfg.IntOpt('42bandwidth', default=10),
+			cfg.IntOpt('43bandwidth', default=10),
+			cfg.IntOpt('14latency', default=10),
+			cfg.IntOpt('13latency', default=10),
+			cfg.IntOpt('12latency', default=10),
+			cfg.IntOpt('24latency', default=10),
+			cfg.IntOpt('23latency', default=10),
+			cfg.IntOpt('21latency', default=10),
+			cfg.IntOpt('31latency', default=10),
+			cfg.IntOpt('32latency', default=10),
+			cfg.IntOpt('34latency', default=10),
+			cfg.IntOpt('41latency', default=10),
+			cfg.IntOpt('42latency', default=10),
+			cfg.IntOpt('43latency', default=10)])
 		self.mac_to_port = {}
 		# Holds the topology data and structure
 		self.topo_raw_switches = []
@@ -221,7 +248,7 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-
+		print(self.CONF.42latency)
 		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
 		print(links)
 		self.net.add_nodes_from(switches)
