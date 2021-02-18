@@ -259,7 +259,7 @@ class toposomething(app_manager.RyuApp):
 
             pi = not (str(eth.dst) == '01:80:c2:00:00:0e')
             packet_in_rcvd = ("\t\tpacket in s%s %s %s %s" % (dpid, eth.src, eth.dst, in_port))
-            if pi: #print packet_in_rcvd
+            if pi: print(packet_in_rcvd)
 
             out_port = None
             if eth.dst in self.hosts_to_switch:
