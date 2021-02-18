@@ -60,7 +60,7 @@ class ProjectOne(app_manager.RyuApp):
 		while True:
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
-			# self.redistribute_flows() / s
+			self.redistribute_flows() 
 			hub.sleep(10)
  
 	def _request_stats(self, datapath):
