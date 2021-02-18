@@ -114,6 +114,9 @@ class ProjectOne(app_manager.RyuApp):
 			out_port=self.net[dpid][next]["port"] # get output port
 		else:
 			out_port = ofproto.OFPP_FLOOD
+
+		actions = [parser.OFPActionOutput(out_port)]
+		
 			# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -128,7 +131,7 @@ class ProjectOne(app_manager.RyuApp):
 		if msg.buffer_id == ofproto.OFP_NO_BUFFER:
 			data = msg.data
 
-		actions = [parser.OFPActionOutput(out_port)]
+		
 		out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
 								  in_port=in_port, actions=actions, data=data)
 		datapath.send_msg(out)
