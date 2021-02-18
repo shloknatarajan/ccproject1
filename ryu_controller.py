@@ -191,7 +191,9 @@ class ProjectOne(app_manager.RyuApp):
 
 		dst = eth.dst
 		src = eth.src
-	
+		print("nanaa")
+		print(dst)
+		print(src)
 		dpid = datapath.id
 		self.mac_to_port.setdefault(dpid, {})
 
