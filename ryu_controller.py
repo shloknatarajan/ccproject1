@@ -60,9 +60,9 @@ class ProjectOne(app_manager.RyuApp):
 		while True:
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
-			# self.redistribute_flows()
+			# self.redistribute_flows() / s
 			hub.sleep(10)
-
+ 
 	def _request_stats(self, datapath):
 		self.logger.debug('send stats request: %016x', datapath.id)
 		ofproto = datapath.ofproto
@@ -207,7 +207,7 @@ class ProjectOne(app_manager.RyuApp):
 		# 	out_port = self.mac_to_port[dpid][dst]
 		# else:
 		# 	out_port = ofproto.OFPP_FLOOD
-		widest = True
+		widest = False
 		if src not in self.net: #Learn it
 			self.net.add_node(src) # Add a node to the graph
 			self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
@@ -257,7 +257,6 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-		print(self.get_latency(1, 2))
 		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no, 'latency': self.get_latency(link.src.dpid, link.dst.dpid)}) for link in links_list]
 		print(links)
 		self.net.add_nodes_from(switches)
