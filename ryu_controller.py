@@ -22,30 +22,18 @@ class ProjectOne(app_manager.RyuApp):
 		# USed for learning switch functioning
 		self.CONF = cfg.CONF
 		self.CONF.register_opts([
-			cfg.IntOpt('14bandwidth', default=10),
-			cfg.IntOpt('13bandwidth', default=10),
-			cfg.IntOpt('12bandwidth', default=10),
-			cfg.IntOpt('24bandwidth', default=10),
-			cfg.IntOpt('23bandwidth', default=10),
-			cfg.IntOpt('21bandwidth', default=10),
-			cfg.IntOpt('31bandwidth', default=10),
-			cfg.IntOpt('32bandwidth', default=10),
-			cfg.IntOpt('34bandwidth', default=10),
-			cfg.IntOpt('41bandwidth', default=10),
-			cfg.IntOpt('42bandwidth', default=10),
-			cfg.IntOpt('43bandwidth', default=10),
-			cfg.IntOpt('14latency', default=10),
-			cfg.IntOpt('13latency', default=10),
-			cfg.IntOpt('12latency', default=10),
-			cfg.IntOpt('24latency', default=10),
-			cfg.IntOpt('23latency', default=10),
-			cfg.IntOpt('21latency', default=10),
-			cfg.IntOpt('31latency', default=10),
-			cfg.IntOpt('32latency', default=10),
-			cfg.IntOpt('34latency', default=10),
-			cfg.IntOpt('41latency', default=10),
-			cfg.IntOpt('42latency', default=10),
-			cfg.IntOpt('43latency', default=10)])
+			cfg.IntOpt('onefourbandwidth', default=10),
+			cfg.IntOpt('onethreebandwidth', default=10),
+			cfg.IntOpt('onetwobandwidth', default=10),
+			cfg.IntOpt('twofourbandwidth', default=10),
+			cfg.IntOpt('twothreebandwidth', default=10),
+			cfg.IntOpt('threefourbandwidth', default=10),
+			cfg.IntOpt('onefourlatency', default=10),
+			cfg.IntOpt('onethreelatency', default=10),
+			cfg.IntOpt('onetwolatency', default=10),
+			cfg.IntOpt('twofourlatency', default=10),
+			cfg.IntOpt('twothreelatency', default=10),
+			cfg.IntOpt('threefourlatency', default=10),
 		self.mac_to_port = {}
 		# Holds the topology data and structure
 		self.topo_raw_switches = []
@@ -248,8 +236,8 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-		print(self.CONF.onetwolatency)
-		print(type(self.CONF))
+		# print(self.CONF.onetwolatency)
+		print(self.CONF.items())
 		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
 		print(links)
 		self.net.add_nodes_from(switches)
