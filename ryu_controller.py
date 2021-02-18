@@ -105,16 +105,16 @@ class ProjectOne(app_manager.RyuApp):
 		# 	out_port = ofproto.OFPP_FLOOD
  
 		if src not in self.net: #Learn it
-		    self.net.add_node(src) # Add a node to the graph
-		    self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
-		    self.net.add_edge(dpid,src,{'port':msg.in_port})  # Add link from switch to node and make sure you are identifying the output port.
+			self.net.add_node(src) # Add a node to the graph
+			self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
+			self.net.add_edge(dpid,src,{'port':msg.in_port})  # Add link from switch to node and make sure you are identifying the output port.
 		if dst in self.net:
-		    path=nx.shortest_path(self.net,src,dst) # get shortest path  
-		    next=path[path.index(dpid)+1] #get next hop
-		    out_port=self.net[dpid][next]['port'] # get output port
+			path=nx.shortest_path(self.net,src,dst) # get shortest path  
+			next=path[path.index(dpid)+1] #get next hop
+			out_port=self.net[dpid][next]['port'] # get output port
 		else:
-    		out_port = ofproto.OFPP_FLOOD
-		# install a flow to avoid packet_in next time
+			out_port = ofproto.OFPP_FLOOD
+			# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
 			# verify if we have a valid buffer_id, if yes avoid to send both
@@ -141,10 +141,10 @@ class ProjectOne(app_manager.RyuApp):
 		# self.graph.add_node(ev.switch.dp.id)
 		# print("Switch with DPID %d has been added." % (ev.switch.dp.id))
 		switch_list = get_switch(self.topology_api_app, None)
-	    switches=[switch.dp.id for switch in switch_list]
-	    links_list = get_link(self.topology_api_app, None)
-	    links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
-	    self.net.add_nodes_from(switches)
+		switches=[switch.dp.id for switch in switch_list]
+		links_list = get_link(self.topology_api_app, None)
+		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
 
 	# @set_ev_cls(event.EventLinkDelete)
