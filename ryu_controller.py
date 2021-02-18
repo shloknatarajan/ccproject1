@@ -141,9 +141,9 @@ class ProjectOne(app_manager.RyuApp):
 	def handler_switch_enter(self, ev):
 		# self.graph.add_node(ev.switch.dp.id)
 		# print("Switch with DPID %d has been added." % (ev.switch.dp.id))
-		switch_list = get_switch(self.topology_api_app, None)
+		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
-		links_list = get_link(self.topology_api_app, None)
+		links_list = get_link(self, None)
 		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
 		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
