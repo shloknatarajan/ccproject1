@@ -79,7 +79,7 @@ class ProjectOne(app_manager.RyuApp):
 		self.flows_packets.sort(key = lambda x: x[2])
 		self.flows_packets = self.flows_packets[:3]
 		for pack in self.flows_packets:
-			graph[pack[0]][pack[1]]["latency"] += pack[1] * .01
+			self.net[pack[0]][pack[1]]["latency"] += pack[1] * .01
 			path = max(nx.all_simple_paths(self.net, pack[0], pack[1]), key=lambda x: len(x))
 			next=path[path.index(dpid)+1] #get next hop
 			out_port=self.net[dpid][next]["port"] # get output port
