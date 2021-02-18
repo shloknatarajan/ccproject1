@@ -236,15 +236,16 @@ class ProjectOne(app_manager.RyuApp):
 		switch_list = get_switch(self, None)
 		switches=[switch.dp.id for switch in switch_list]
 		links_list = get_link(self, None)
-		self.get_latency(1, 2)
-		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+		print(self.get_latency(1, 2))
+		links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no, 'latency': self.get_latency(link.src.dpid, link.dst.dpid)}) for link in links_list]
 		print(links)
 		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
 
 	def get_latency(self, inside, out):
 		for (each_key, each_val) in self.CONF.items():
-			print(each_key)
+			if self.get_word(inside) in each_key and self.get_word(out) in each_key and 'latency' in each_key:
+				return each_val
 
 	def get_word(self, num):
 		if num == 1:
