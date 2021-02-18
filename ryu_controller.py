@@ -11,6 +11,7 @@ from ryu.topology import event
 from ryu.topology.api import get_switch, get_link
 import copy
 import networkx as nx
+from ryu.lib import hub
 
 class ProjectOne(app_manager.RyuApp):
 	OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -23,6 +24,73 @@ class ProjectOne(app_manager.RyuApp):
 		self.topo_raw_switches = []
 		self.topo_raw_links = []
 		self.net=nx.DiGraph()
+		self.datapaths = {}
+		self.monitor_thread = hub.spawn(self._monitor)
+
+	@set_ev_cls(ofp_event.EventOFPStateChange,
+				[MAIN_DISPATCHER, DEAD_DISPATCHER])
+	def _state_change_handler(self, ev):
+		datapath = ev.datapath
+		if ev.state == MAIN_DISPATCHER:
+			if datapath.id not in self.datapaths:
+				self.logger.debug('register datapath: %016x', datapath.id)
+				self.datapaths[datapath.id] = datapath
+		elif ev.state == DEAD_DISPATCHER:
+			if datapath.id in self.datapaths:
+				self.logger.debug('unregister datapath: %016x', datapath.id)
+				del self.datapaths[datapath.id]
+
+	def _monitor(self):
+		while True:
+			for dp in self.datapaths.values():
+				self._request_stats(dp)
+			hub.sleep(10)
+
+	def _request_stats(self, datapath):
+		self.logger.debug('send stats request: %016x', datapath.id)
+		ofproto = datapath.ofproto
+		parser = datapath.ofproto_parser
+
+		req = parser.OFPFlowStatsRequest(datapath)
+		datapath.send_msg(req)
+
+		req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
+		datapath.send_msg(req)
+
+	@set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
+	def _flow_stats_reply_handler(self, ev):
+		body = ev.msg.body
+
+		self.logger.info('datapath         '
+						 'in-port  eth-dst           '
+						 'out-port packets  bytes')
+		self.logger.info('---------------- '
+						 '-------- ----------------- '
+						 '-------- -------- --------')
+		for stat in sorted([flow for flow in body if flow.priority == 1],
+						   key=lambda flow: (flow.match['in_port'],
+											 flow.match['eth_dst'])):
+			self.logger.info('%016x %8x %17s %8x %8d %8d',
+							 ev.msg.datapath.id,
+							 stat.match['in_port'], stat.match['eth_dst'],
+							 stat.instructions[0].actions[0].port,
+							 stat.packet_count, stat.byte_count)
+
+	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+	def _port_stats_reply_handler(self, ev):
+		body = ev.msg.body
+
+		self.logger.info('datapath         port     '
+						 'rx-pkts  rx-bytes rx-error '
+						 'tx-pkts  tx-bytes tx-error')
+		self.logger.info('---------------- -------- '
+						 '-------- -------- -------- '
+						 '-------- -------- --------')
+		for stat in sorted(body, key=attrgetter('port_no')):
+			self.logger.info('%016x %8x %8d %8d %8d %8d %8d %8d',
+							 ev.msg.datapath.id, stat.port_no,
+							 stat.rx_packets, stat.rx_bytes, stat.rx_errors,
+							 stat.tx_packets, stat.tx_bytes, stat.tx_errors)
 
 	@set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
 	def switch_features_handler(self, ev):
@@ -103,17 +171,22 @@ class ProjectOne(app_manager.RyuApp):
 		# 	out_port = self.mac_to_port[dpid][dst]
 		# else:
 		# 	out_port = ofproto.OFPP_FLOOD
- 
+		widest = True
 		if src not in self.net: #Learn it
 			self.net.add_node(src) # Add a node to the graph
 			self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
 			self.net.add_edge(dpid,src,port=in_port)  # Add link from switch to node and make sure you are identifying the output port.
 		if dst in self.net:
-			path=nx.shortest_path(self.net,src,dst) # get shortest path  
+			if not widest:
+				path=nx.shortest_path(self.net,src,dst) # get shortest path  
+			else: 
+				path = max(nx.all_simple_paths(DAG, 1, 10), key=lambda x: len(x))
 			next=path[path.index(dpid)+1] #get next hop
 			out_port=self.net[dpid][next]["port"] # get output port
 		else:
 			out_port = ofproto.OFPP_FLOOD
+
+
 
 		actions = [parser.OFPActionOutput(out_port)]
 
