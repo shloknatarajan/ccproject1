@@ -31,7 +31,7 @@ class toposomething(app_manager.RyuApp):
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
-        #print "\n".join([x for x in dir(obj) if x[0] != "_"])
+        print("\n".join([x for x in dir(obj) if x[0] != "_"]))
 
     def __init__(self, *args, **kwargs):
         super(toposomething, self).__init__(*args, **kwargs)
