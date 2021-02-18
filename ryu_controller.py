@@ -22,7 +22,7 @@ class ProjectOne(app_manager.RyuApp):
 		# Holds the topology data and structure
 		self.topo_raw_switches = []
 		self.topo_raw_links = []
-		self.graph = nx.Graph()
+		self.net=nx.DiGraph()
 
 	@set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
 	def switch_features_handler(self, ev):
@@ -99,18 +99,21 @@ class ProjectOne(app_manager.RyuApp):
 		# learn a mac address to avoid FLOOD next time.
 		self.mac_to_port[dpid][src] = in_port
 
-		if dst in self.mac_to_port[dpid]:
-			out_port = self.mac_to_port[dpid][dst]
+		# if dst in self.mac_to_port[dpid]:
+		# 	out_port = self.mac_to_port[dpid][dst]
+		# else:
+		# 	out_port = ofproto.OFPP_FLOOD
+ 
+		if src not in self.net: #Learn it
+		    self.net.add_node(src) # Add a node to the graph
+		    self.net.add_edge(src,dpid) # Add a link from the node to it's edge switch
+		    self.net.add_edge(dpid,src,{'port':msg.in_port})  # Add link from switch to node and make sure you are identifying the output port.
+		if dst in self.net:
+		    path=nx.shortest_path(self.net,src,dst) # get shortest path  
+		    next=path[path.index(dpid)+1] #get next hop
+		    out_port=self.net[dpid][next]['port'] # get output port
 		else:
-			out_port = ofproto.OFPP_FLOOD
-
-		print("\n\n\n\n\n\n")
-		print(self.graph)
-		print(nx.shortest_path(self.graph, source=src, target=dst))
-		print(self.graph.nodes())
-		actions = [parser.OFPActionOutput(out_port)]
-		print("\n\n\n\n\n\n")
-
+    		out_port = ofproto.OFPP_FLOOD
 		# install a flow to avoid packet_in next time
 		if out_port != ofproto.OFPP_FLOOD:
 			match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
@@ -135,21 +138,27 @@ class ProjectOne(app_manager.RyuApp):
 	"""
 	@set_ev_cls(event.EventSwitchEnter)
 	def handler_switch_enter(self, ev):
-		self.graph.add_node(ev.switch.dp.id)
-		print("Switch with DPID %d has been added." % (ev.switch.dp.id))
+		# self.graph.add_node(ev.switch.dp.id)
+		# print("Switch with DPID %d has been added." % (ev.switch.dp.id))
+		switch_list = get_switch(self.topology_api_app, None)
+	    switches=[switch.dp.id for switch in switch_list]
+	    links_list = get_link(self.topology_api_app, None)
+	    links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+	    self.net.add_nodes_from(switches)
+		self.net.add_edges_from(links)
 
-	@set_ev_cls(event.EventLinkDelete)
-	def handler_link_delete(self, ev):
-		self.graph.add_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
+	# @set_ev_cls(event.EventLinkDelete)
+	# def handler_link_delete(self, ev):
+	# 	self.graph.add_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
 
-	@set_ev_cls(event.EventLinkAdd)
-	def handler_link_add(self, ev):
-		self.graph.remove_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
+	# @set_ev_cls(event.EventLinkAdd)
+	# def handler_link_add(self, ev):
+	# 	self.graph.remove_edge(self.get_node_object(ev.link.src), self.get_node_object(ev.link.dst))
 
-	@set_ev_cls(event.EventHostAdd)
-	def handler_host_add(self, ev, dir):
-		self.graph.add_node(ev.host.mac)
-		print("host with mac %s has been added" %(ev.host.mac))
+	# @set_ev_cls(event.EventHostAdd)
+	# def handler_host_add(self, ev, dir):
+	# 	self.graph.add_node(ev.host.mac)
+	# 	print("host with mac %s has been added" %(ev.host.mac))
 
 
 	def get_node_object(self, item):
