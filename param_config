@@ -1,0 +1,1 @@
+{"S1":4, "T1": 5, "T2": 20, "strategy":"proactive", "monitoring_on":True, "redistribute_on":False, "flow_logging_on":False, "port_logging_on":False}
