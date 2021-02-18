@@ -242,7 +242,7 @@ class ProjectOne(app_manager.RyuApp):
 		self.net.add_nodes_from(switches)
 		self.net.add_edges_from(links)
 
-	def get_latency(inside, out):
+	def get_latency(self, inside, out):
 		for (each_key, each_val) in self.CONF:
 			print(each_key)
 
