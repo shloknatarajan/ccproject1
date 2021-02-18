@@ -31,7 +31,7 @@ class toposomething(app_manager.RyuApp):
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
-        print "\n".join([x for x in dir(obj) if x[0] != "_"])
+        #print "\n".join([x for x in dir(obj) if x[0] != "_"])
 
     def __init__(self, *args, **kwargs):
         super(toposomething, self).__init__(*args, **kwargs)
@@ -259,7 +259,7 @@ class toposomething(app_manager.RyuApp):
 
             pi = not (str(eth.dst) == '01:80:c2:00:00:0e')
             packet_in_rcvd = ("\t\tpacket in s%s %s %s %s" % (dpid, eth.src, eth.dst, in_port))
-            if pi: print packet_in_rcvd
+            if pi: #print packet_in_rcvd
 
             out_port = None
             if eth.dst in self.hosts_to_switch:
@@ -288,7 +288,7 @@ class toposomething(app_manager.RyuApp):
                 if len(path) != 0:
                     #print 'found path:',
                     for p in path:
-                        print self.graph.es[p]['src_dpid'],
+                        #print self.graph.es[p]['src_dpid'],
                     #print 'fin'
                     out_port = self.graph.es[path[0]]['src_port']
                 else:
@@ -304,7 +304,7 @@ class toposomething(app_manager.RyuApp):
                                      out_port, msg.data)
             else:
                 if self.mac_learning(dpid, eth.src, in_port) is False:
-                    print "IPV4 packet enter in different ports"
+                    #print "IPV4 packet enter in different ports"
                     return
                 else:
                     #print 'flooding'
@@ -312,17 +312,17 @@ class toposomething(app_manager.RyuApp):
 
     @set_ev_cls(event.EventSwitchEnter)
     def handler_switch_enter(self, ev):
-        print "Switch %d entered" % ev.switch.dp.id
+        #print "Switch %d entered" % ev.switch.dp.id
         self.graph.add_vertex(str(ev.switch.dp.id))
 
     @set_ev_cls(event.EventSwitchLeave)
     def handler_switch_leave(self, ev):
-        print "Switch left"
+        #print "Switch left"
         self.graph.delete_vertices(str(ev.switch.dp.id))
 
     @set_ev_cls(event.EventLinkAdd)
     def handler_link_add(self, ev):
-        print ev.link.src.dpid, ev.link.src.port_no, ev.link.dst.dpid, ev.link.dst.port_no
+        #print ev.link.src.dpid, ev.link.src.port_no, ev.link.dst.dpid, ev.link.dst.port_no
         try:
             bw = self.link_config[ev.link.src.port_no][ev.link.dst.port_no]["bw"]
             lat = self.link_config[ev.link.src.port_no][ev.link.dst.port_no]["lat"]
@@ -336,7 +336,7 @@ class toposomething(app_manager.RyuApp):
         try:
             self.graph.es.find(src_dpid=ev.link.src.dpid, dst_dpid=ev.link.dst.dpid)
             # self.graph.find(_source=str(ev.link.src.dpid),_target=str(ev.link.dst.dpid))
-            print "duplicate link add event"
+            #print "duplicate link add event"
             return
         except:
             pass
@@ -351,8 +351,8 @@ class toposomething(app_manager.RyuApp):
             estimated_bw=bw,
             last_bws=deque(maxlen=self.S1),
             last_num_bytes=0)
-        print "Link added", ev.link
-        print self.graph
+        #print "Link added", ev.link
+        #print self.graph
 
     def widest_dijkstra(self, g, s, bw='bw'):
         previous = {}  # previous hops
@@ -388,7 +388,7 @@ class toposomething(app_manager.RyuApp):
         edges = []
         curr = d
         while curr != s:
-            # print curr, g.vs[curr]['name']
+            # #print curr, g.vs[curr]['name']
             try:
                 eid = g.es.find(_source=prev[curr], _target=curr).index
             except:
@@ -532,13 +532,13 @@ class toposomething(app_manager.RyuApp):
 
             #print 'sleeping for', self.T2, 'seconds'
             sleep(self.T2)
-            print "Waited for", self.T2, "seconds"
+            #print "Waited for", self.T2, "seconds"
 
             self.redistributing = True
 
-            print "REDISTRIBUTING!!!"
+            #print "REDISTRIBUTING!!!"
             self.redistribute()
-            print "done REDISTRIBUTING"
+            #print "done REDISTRIBUTING"
 
             self.redistributing = False
 
@@ -552,7 +552,7 @@ class toposomething(app_manager.RyuApp):
         info_list = sorted(info_list, key=lambda info:info['packets'], reverse=True)
 
         for info in info_list:
-            print info
+            #print info
 
         # restore estimates to initial capacity
         estimates = self.graph.es['estimated_bw']
@@ -579,10 +579,10 @@ class toposomething(app_manager.RyuApp):
                 #print '\tpath(%d):' % (len(epath)),
                 if len(epath) != 0:
                     for eid in epath:
-                        print self.graph.es[eid]['src_dpid'],
-                    print self.graph.es[epath[-1]]['dst_dpid']
+                        #print self.graph.es[eid]['src_dpid'],
+                    #print self.graph.es[epath[-1]]['dst_dpid']
                 else:
-                    print self.hosts_to_switch[src]
+                    #print self.hosts_to_switch[src]
 
                 new_flows = self.get_flows(epath, src, dst, info)
                 # new_flows = self.get_flows1(src_vid, dst_vid, src_port, dst_port, src, dst, prev, cap, info)
@@ -603,8 +603,8 @@ class toposomething(app_manager.RyuApp):
 
         # delete all flows
         for dpid in self.datapaths:
-            print "trying to delete flows"
-            print dpid
+            #print "trying to delete flows"
+            #print dpid
             self.delete_flow(self.datapaths[dpid])
 
         # install all the new flows
@@ -623,7 +623,7 @@ class toposomething(app_manager.RyuApp):
     def bw_print(self, eid, bw_key='estimated_bw'):
         bw = self.graph.es[eid][bw_key]
         bw = bw /self.BYTES_PER_MEGABIT / self.T1
-        print self.graph.es[eid]['src_dpid'], '->', self.graph.es[eid]['dst_dpid'], bw
+        #print self.graph.es[eid]['src_dpid'], '->', self.graph.es[eid]['dst_dpid'], bw
 
     def get_flows(self, epath, src, dst, info):
         flows = []
@@ -688,7 +688,7 @@ class toposomething(app_manager.RyuApp):
 
             try: eid = self.graph.es.find(_source=prev[curr], _target=curr).index
             except:
-                print "path not found, returning"
+                #print "path not found, returning"
                 return None
 
             in_port = self.graph.es[eid]['dst_port']
@@ -712,7 +712,7 @@ class toposomething(app_manager.RyuApp):
         edges = []
         curr = d
         while curr != s:
-            # print curr, g.vs[curr]['name']
+            # #print curr, g.vs[curr]['name']
             try:
                 eid = g.es.find(_source=prev[curr], _target=curr).index
             except:
